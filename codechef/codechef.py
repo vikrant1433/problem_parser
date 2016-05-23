@@ -1,3 +1,4 @@
+import re
 import sys
 
 import requests
@@ -11,33 +12,51 @@ from bs4 import BeautifulSoup
 #     problem_code = "LADDU"
 # problem_code = problem_code.upper()
 url = sys.argv[1]
+# url = "https://www.codechef.com/MAY16/problems/DISTNUM2"
 # print(url)
 r = requests.get(url)
 
 soup = BeautifulSoup(r.content, "html.parser")
-preTags = soup("pre")
-# print (preTags)
-soup = BeautifulSoup(str(preTags), "html.parser")
-# print (soup.prettify())
-tags = soup.find_all("b");
-# print (tags)
-# print(tags[4].next_sibling)
-# print (len(tags))
-num_test = 1
-# os.chdir()
-input_file = "input"
-output_file = "output"
-for i in range(0, len(tags), 2):
-    f = open(input_file + str(num_test)+".txt", "w")
-    f.write(tags[i].next_sibling.strip() + "\n")
-    f.close()
+inputs = soup.find_all('b', text = re.compile('input:', re.IGNORECASE))
+num_tests=1
+for inp in inputs:
+    with open("input"+str(num_tests)+ ".txt", "w") as f:
+        print(inp.next_sibling.strip(), file=f)
+    num_tests += 1
 
-    f = open(output_file + str(num_test)+".txt", "w")
-    f.write(tags[i + 1].next_sibling.strip() + "\n")
-    f.close()
-    num_test += 1
+outputs = soup.find_all('b', text = re.compile('output:', re.IGNORECASE))
+num_tests=1
+for out in outputs:
+    with open("output"+str(num_tests)+ ".txt", "w") as f:
+        print(out.next_sibling.strip(), file=f)
+    num_tests += 1
+
 with open("num_tests", "w") as f:
-    print(num_test-1, file=f)
+    print(num_tests-1, file=f)
+# print(inputs)
+# preTags = soup("pre")
+# # print (preTags)
+# soup = BeautifulSoup(str(preTags), "html.parser")
+# # print (soup.prettify())
+# tags = soup.find_all("b");
+# # print (tags)
+# # print(tags[4].next_sibling)
+# # print (len(tags))
+# num_test = 1
+# # os.chdir()
+# input_file = "input"
+# output_file = "output"
+# for i in range(0, len(tags), 2):
+#     f = open(input_file + str(num_test)+".txt", "w")
+#     f.write(tags[i].next_sibling.strip() + "\n")
+#     f.close()
+#
+#     f = open(output_file + str(num_test)+".txt", "w")
+#     f.write(tags[i + 1].next_sibling.strip() + "\n")
+#     f.close()
+#     num_test += 1
+# with open("num_tests", "w") as f:
+#     print(num_test-1, file=f)
 
     # while(sibling is not None):
     #     print(sibling)

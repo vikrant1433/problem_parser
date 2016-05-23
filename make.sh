@@ -2,7 +2,7 @@
 cat makefile_tmp > makefile
 rm makefile_tmp
 num_tests=$2
-echo "num_tests = $num_tests"
+#echo "num_tests = $num_tests"
 problem_code=$1
 function write_test {
 text=`cat << EOM

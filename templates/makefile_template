@@ -1,0 +1,9 @@
+red=`tput setaf 1`
+green=`tput setaf 2`
+reset=`tput sgr0`
+all: file_name
+file_name: file_name.o
+	@g++ file_name.o -o file_name
+file_name.o: file_name.cpp
+	@g++ -c file_name.cpp
+
