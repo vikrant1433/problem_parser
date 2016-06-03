@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+source ~/PycharmProjects/hackerrank/hackerrank/ranked_contest/helper_functions.sh
 url="$1"
 #url="https://www.hackerrank.com/contests/code-cpp-4/challenges/prettyprint"
 #url="https://www.hackerrank.com/contests/mtech-cse-2016-practice-test-2/challenges/coin-change"
@@ -11,6 +12,7 @@ if [ ${contest_folder} != "www.hackerrank.com" ] && [ ${current_folder} != ${con
     mkdir -p ${contest_folder}
     cd ${contest_folder}
 fi
+
 fourth=`echo $url | cut -d'/' -f4`
 
 if [[ "$fourth" == "challenges" ]] ; then
@@ -25,7 +27,7 @@ first=`echo ${url} | cut -d'/' -f1-3`
 second=`echo ${url} | cut -d'/' -f4-`
 suffix="download_testcases"
 complete_url="${first}/${middle}/${second}/${suffix}"
-echo ${complete_url}
+#echo ${complete_url}
 if [ -n "$problem_code" ]; then
 #	if [[ "$current_folder" != "$contest_folder" ]]; then
 #		mkdir -p ${contest_folder}
@@ -34,43 +36,42 @@ if [ -n "$problem_code" ]; then
     mkdir -p ${problem_code}
     cd ${problem_code}
     #remove all previous test cases if already present
-    rm input* -f
-    rm output* -f
+
+    remove_input_output
+
 
     #create c++ template
     if [ ! -f "${problem_code}.cpp" ]; then
-        echo "// ${url}" > ${problem_code}.cpp
-        cat ~/PycharmProjects/hackerrank/templates/c++_template >> ${problem_code}.cpp
+        create_cpp_template
     fi
     #parse testcases from website
 #    echo "$url/${suffix}"
-    wget ${complete_url} > /dev/null 2>&1
-    #extract downloaded test cases
-    unzip "${zip_testcase_folder_name}" > /dev/null 2>&1
-    #calculate number of test cases
-    num_tests=`ls -l input | wc -l`
-    ((num_tests--))
-    # creat c++ makefile
-    bash ~/PycharmProjects/hackerrank/create_makefile.sh "${problem_code}" "${num_tests}"
-    rm ${zip_testcase_folder_name}
-    mv input/* .; rm input -r
-    mv output/* .; rm output -r
+#    wget ${complete_url} > /dev/null 2>&1
+    # if download zip file is present in /tmp/ director then move it , extract it, create makefile, remove zip file, remove extracted contents
+    zip_testcase_folder_name="${problem_code}-testcases.zip"
+    if [[ -f  "/tmp/${zip_testcase_folder_name}" ]]; then
+
+        cp /tmp/${zip_testcase_folder_name} "${PWD}/"
+        #extract downloaded test cases
+        unzip "${zip_testcase_folder_name}" > /dev/null 2>&1
+        #calculate number of test cases
+        num_tests=`ls -l input | wc -l`
+        ((num_tests--))
+        # creat c++ makefile
+        bash ~/PycharmProjects/hackerrank/create_makefile.sh "${problem_code}" "${num_tests}"
+        delete_folder ${zip_testcase_folder_name}
+        mv input/* .;
+        mv output/* .;
+        remove_input_output
+        rename_files "input*txt"
+        rename_files "output*txt"
+        rename_with_suffix "_input*.txt"
+        rename_with_suffix "_output*.txt"
+    else
+        touch "input1.txt" "output1.txt"
+        bash ~/PycharmProjects/hackerrank/create_makefile.sh "${problem_code}" 1
+    fi
 else
     echo "usage: bash parse_problem_hackerrank.sh <url>"
 fi
 
-function rename_with_suffix {
-cnt=0
-file_pattern="${1}"
-for file in ${file_pattern}; do
-  # new=$(printf "%02d.jpg" "$a") #04 pad to length of 4
-  ext="${file##*.}"
-  base="${file%%[0-9]*}"
-  ((cnt++))
-  mv -- "$file" "${base}${cnt}.${ext}"
-done
-}
-
-
-rename_with_suffix "input*.txt"
-rename_with_suffix "output*.txt"

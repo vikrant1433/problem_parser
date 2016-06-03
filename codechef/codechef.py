@@ -1,6 +1,6 @@
 import re
 import sys
-
+import os.path
 import requests
 from bs4 import BeautifulSoup
 
@@ -17,18 +17,22 @@ url = sys.argv[1]
 r = requests.get(url)
 
 soup = BeautifulSoup(r.content, "html.parser")
-inputs = soup.find_all('b', text = re.compile('input:', re.IGNORECASE))
+inputs = soup.find_all('b', text = re.compile('input', re.IGNORECASE))
 num_tests=1
 for inp in inputs:
-    with open("input"+str(num_tests)+ ".txt", "w") as f:
-        print(inp.next_sibling.strip(), file=f)
+    input_file_name = "input"+str(num_tests)+ ".txt"
+    if not os.path.isfile(input_file_name):
+        with open(input_file_name, "w") as f:
+            print(inp.next_sibling.strip(), file=f)
     num_tests += 1
 
-outputs = soup.find_all('b', text = re.compile('output:', re.IGNORECASE))
+outputs = soup.find_all('b', text = re.compile('output', re.IGNORECASE))
 num_tests=1
 for out in outputs:
-    with open("output"+str(num_tests)+ ".txt", "w") as f:
-        print(out.next_sibling.strip(), file=f)
+    output_file_name = "output" + str(num_tests) + ".txt"
+    if not os.path.isfile(output_file_name):
+        with open(output_file_name, "w") as f:
+            print(out.next_sibling.strip(), file=f)
     num_tests += 1
 
 with open("num_tests", "w") as f:

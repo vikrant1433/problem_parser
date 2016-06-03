@@ -8,17 +8,20 @@ function write_test {
 text=`cat << EOM
 test${1}: all
 \t@./${problem_code} < input${1}.txt > out_ref
-\t-@diff -wBy --suppress-blank-empty output${1}.txt out_ref >/dev/null ;\\\\\\\\
+\t-@diff -wy --suppress-blank-empty output${1}.txt out_ref >/dev/null ;\\\\\\\\
 \tif [ \\$\\$? -eq 0 ] ; then \\\\\\\\
 \t\techo "\\${green}TEST CASE#${1} PASS\\${reset}" ;\\\\\\\\
 \telse \\\\\\\\
 \t\techo "\\${red}TEST CASE#${1} FAILED\\${reset}" ;\\\\\\\\
 \t\techo "input:" ;\\\\\\\\
-\t\tcat input${1}.txt ;\\\\\\\\
-\t\techo "-----------------------------------------------------------------------" ;\\\\\\\\
-\t\techo "expected output                    \t\t\t  your output" ;\\\\\\\\
-\t\techo "-----------------------------------------------------------------------" ;\\\\\\\\
-\t\tdiff -wBy --suppress-blank-empty output${1}.txt out_ref || true;\\\\\\\\
+\t\thead input${1}.txt ;\\\\\\\\
+\t\techo ;\\\\\\\\
+\t\techo "expected output" ;\\\\\\\\
+\t\tcat output${1}.txt ;\\\\\\\\
+\t\techo ;\\\\\\\\
+\t\techo "your output" ;\\\\\\\\
+\t\tcat out_ref ;\\\\\\\\
+\t\techo;\\\\\\\\
 \tfi
 EOM
 `

@@ -10,7 +10,11 @@ class HackerRank(object):
     def __init__(self, username, password):
         self.username = username
         self.password = password
-        self.browser = webdriver.PhantomJS('phantomjs')
+        chrome_options = webdriver.ChromeOptions()
+        prefs = {"download.default_directory": "/tmp"}
+        chrome_options.add_experimental_option("prefs", prefs)
+        self.browser = webdriver.Chrome(chrome_options=chrome_options)
+        # self.browser = webdriver.Chrome()  # PhantomJS('phantomjs')
 
     def login(self):
         self.browser.get(self.base_url + "/login")
@@ -26,14 +30,14 @@ class HackerRank(object):
 
     def get_contest_problems(self, url):
         self.browser.get(url)
-        time.sleep(1)
+        time.sleep(2)
         problem_links = self.browser.find_elements_by_css_selector("h4 > a")
         return [link.get_attribute("href") for link in problem_links]
 
     def get_download_testcase_link(self, url):
-        time.sleep(1)
+        time.sleep(5)
         self.browser.get(url)
-        time.sleep(1)
+        time.sleep(5)
         more_btn = self.browser.find_element_by_id("sidebar-more-button")
         # print(more_btn.get_attribute("outerHTML"))
         time.sleep(1)
@@ -47,17 +51,22 @@ class HackerRank(object):
 
 h = HackerRank("mailtovikrantpro@gmail.com", "041291985")
 
-# h.login()
-# time.sleep(5)
+h.login()
+time.sleep(2)
 contest_link = sys.argv[1]
 problem_links = h.get_contest_problems(contest_link)
 # print(problem_links)
 # f = open("testcase_links", "w")
+# https://www.hackerrank.com/contests/mtech-cse-2016-practice-test-2/challenges/coin-change
+# https://www.hackerrank.com/rest/contests/mtech-cse-2016-practice-test-2/challenges/coin-change/download_testcases
 for link in problem_links:
     # print(link)
+    download_url = "https://www.hackerrank.com/rest" + link[len("https://www.hackerrank.com"):] + '/download_testcases'
+    h.browser.get(download_url)
     # testcase_link = h.get_download_testcase_link(link)
     # print(testcase_link)
     print(link)
+time.sleep(60)
 # f.close()
 
 # class MyClass(object):

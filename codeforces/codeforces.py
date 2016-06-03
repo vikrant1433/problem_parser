@@ -1,7 +1,9 @@
+import os.path
 import sys
 
 import requests
 from bs4 import BeautifulSoup
+from html2text import html2text
 
 # import urllib3
 
@@ -16,6 +18,8 @@ r = requests.get(url)
 
 soup = BeautifulSoup(r.content, "html.parser")
 preTags = soup("pre")
+
+
 # for tag in preTags:
 #     print(tag.text)
 # print (preTags)
@@ -25,20 +29,36 @@ preTags = soup("pre")
 # # print (tags)
 # # print(tags[4].next_sibling)
 # # print (len(tags))
+def join_with_newline(text_list):
+    ret = ""
+    for t in text_list:
+        ret = ret + "\n" + t
+    return ret.strip(' \t\n\r')
+
+
 num_test = 1
 # # os.chdir()
 input_file = "input"
 output_file = "output"
 for i in range(0, len(preTags), 2):
-    f = open(input_file + str(num_test)+".txt", "w")
-    f.write(preTags[i].text.strip() + "\n")
+    input_file_name = input_file + str(num_test) + ".txt"
+    # if not os.path.isfile(input_file_name) or True: # always True
+    f = open(input_file_name, "w")
+    text_list = list(map(str.strip, html2text(str(preTags[i])).strip().split('\n')))
+    text = join_with_newline(text_list)
+    f.write(text + "\n")
     f.close()
-    f = open(output_file + str(num_test)+".txt", "w")
-    f.write(preTags[i + 1].text.strip() + "\n")
+
+    output_file_name = output_file + str(num_test) + ".txt"
+    # if not os.path.isfile(output_file_name):
+    f = open(output_file_name, "w")
+    text_list = list(map(str.strip, html2text(str(preTags[i + 1])).strip().split('\n')))
+    text = join_with_newline(text_list)
+    f.write(html2text(str(preTags[i + 1])).strip() + "\n")
     f.close()
     num_test += 1
 with open("num_tests", "w") as f:
-    print(num_test-1, file=f)
+    print(num_test - 1, file=f)
 
     # while(sibling is not None):
     #     print(sibling)

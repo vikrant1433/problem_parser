@@ -32,7 +32,7 @@ links = soup.find_all("div", {"class": "problemname"})
 # print(links)
 # https://www.codechef.com/
 for link in links:
-    print("https://www.codechef.com/"+link.a['href'])
+    print("https://www.codechef.com"+link.a['href'])
 # print(tag[0].a['href'])
 # with open("out.html","w") as f:
 #     print(soup.prettify(),file=f)
